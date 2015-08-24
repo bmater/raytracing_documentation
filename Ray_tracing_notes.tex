@@ -1,0 +1,96 @@
+\documentclass[12pt]{article}
+%\usepackage{amsmath}
+\usepackage{natbib}
+
+\newcommand{\kv}{$\textbf{k}$}
+\newcommand{\x}{$\textbf{x}$}
+\newcommand{\cg}{$\textbf{c}_g$}
+
+\begin{document}
+
+\title{\textbf{\large{Notes on Ray Tracing}}}
+\author{Ben Mater}
+\maketitle
+
+This documents contains running documentation of the ray tracing parameterization in MOM6.
+
+\section{Framework for parameterizing low-mode internal tides}
+
+Of the 3.5TW of power in the baroclinic tide, roughly 2.5TW is directly converted to turbulence at continental marigins with the remaining 1TW being lost to internal (baroclinic) waves in the open ocean as tidal flows encounter topographic roughness \citep{Munk&Wunsch98;Wunsch&Ferrari04}. The power transferred to the internal wave field perhaps makes up roughly half of the total power hypothesized to support the open-ocean canonical diffusivity of $K=10^{-4}m^2/s$ \citep{Munk}. 
+
+The propagating internal waves occuring at various tidal frequencies are referred to as ``internal tides." Those waves with lowest vertical wave number (low modes) are less suceptible to dissipation by shear and are known to propagate thousands of kilometers prior to remotely breaking and giving up their energy to 3-D turbulence and mixing. The precise partitioning of local to remote dissipation is not straight forward and can vary from ?? to ??, where q is the fraction of local to remote dissipation (need citation). Because low modes have the potential to transmit large amounts of energy over large distances, consideration of their behavior and influence on mixing in global climate models is important. Since the resolution of GCMs precludes explicit representation of these internal waves, their generation, propagation, and dissipation must all be parameterized. Herein lies the focus of this work.
+
+\subsection{General theory of ray tracing}
+
+A framework for predicting the trajectory of the low-mode internal tides lies in the well referenced theory of ray-tracing \cite{Lighthill76}, wherein an inhomogeneous dispersion relation 
+\begin{equation}
+\label{eq:dispersion}
+\omega = \Omega({\textbf{k},\textbf{x}})
+\end{equation}
+is used to predict trajectory of the group velocity vector, $\textbf{c}_g\equiv\partial\omega/\partial\textbf{k}$. The basic idea is to derive an equation for the time derivative of the wave number vector, \kv. First, defining the phase to be $\theta = \textbf{k}\cdot\textbf{x}-\omega t$, then $\nabla\theta = \textbf{k}$ and $\partial\theta/\partial t = -\omega$. Therefore
+\begin{equation}
+\frac{\partial\textbf{k}}{\partial t} = -\nabla\omega = -\nabla\Omega({\textbf{k},\textbf{x}}.)
+\end{equation}
+Since the frequency is a function of both wavenumber and space, this equation becomes
+\begin{equation}
+\frac{\partial\textbf{k}}{\partial t} = -\left(\frac{\partial\Omega}{\partial\textbf{k}}\nabla\textbf{k} + \nabla\Omega|_k  \right),
+\end{equation}
+or equivilently,
+\begin{equation}
+\frac{\partial\textbf{k}}{\partial t} + \textbf{c}_g\cdot\nabla\textbf{k} = -\nabla\Omega|_k,	
+\end{equation}
+where $\nabla\Omega|_k$ is the change in frequency at constant wave number (i.e. as the wave propagates through the inhomogeneous medium). Note that the left hand side is the material derivate for the wave number along the trajectory of the group velocity, i.e., 
+\begin{equation}
+\label{eq:DkDt}
+D\textbf{k}/Dt = -\nabla\Omega|_k
+\end{equation}
+From this, it is obvious that wavenumber is \textit{not} conserved in an inhomogeneous medium. Rather, it is frequency that is conserved along a ray. Conservation of frequency can be proved by expanding the full time derivative of the frequency using the chain rule, 
+\begin{equation}
+\label{eq:DomegaDt}
+\frac{d\omega}{dt} = \frac{\partial\omega}{\partial k_i}\frac{dk_i}{dt} + \frac{\partial\omega}{\partial x_i}\frac{dx_i}{dt},
+\end{equation}
+then plugging in equation \ref{eq:DkDt} (for $dk_i/dt$) and the specification of $\textbf{c}_g \equiv \partial\omega/\partial k_i = dx_i/dt$ to yield $d\omega/dt = 0$. To trace a ray in three dimensions, one would solve the three equations given by \ref{eq:DkDt} and the three additional equations given by $\textbf{c}_g = \partial\Omega/\partial\textbf{k}$.
+
+\section{Raytracing of long-waves}
+
+Since we are interested in very long waves propagating along a horizontal wave guide (i.e. the finite depth of the ocean), the problem of ray tracing for the internal tide becomes two dimensional. The full dispersion relation for constant buoyancy frequency,
+\begin{equation}
+\omega^2 = f^2\left(\frac{m^2}{k^2+l^2+m^2}\right) + N^2\left(\frac{k^2+l^2}{k^2+l^2+m^2}\right),
+\end{equation}
+can be modified in the hydrostatic, rotation-dependent limit (i.e. $K_h^2<<m^2$ and $\omega>\approx f$) to become
+\begin{equation}
+	\label{eq:disp1}
+	\omega^2 = f^2 + \frac{N^2}{m^2}K_h^2,
+\end{equation}
+where $K_h^2=k^2+l^2$. For convenience, we note that in the absence of rotation the magnitude of the horizontal group velocity is $c_n = N/m$. Therefore equation \ref{eq:disp1} becomes
+\begin{equation}
+	\label{eq:disp}
+	\omega^2 = f^2 + c_n^2K_h^2,
+\end{equation}
+and the two-dimensional group velocity vector is
+\begin{equation}
+	\label{eq:cg}
+	\textbf{c}_g = c_n\frac{\sqrt{\omega^2-f^2}}{\omega}\left(\textbf{i}cos\phi + \textbf{j}sin\phi \right),
+\end{equation}
+where $k = K_hcos\phi$ and $l = K_hsin\phi$.
+
+For this limit, the ray-tracing equations (\ref{eq:DkDt}) become
+\begin{equation}
+	\label{eq:DkDt_itide}
+	\frac{Dk}{Dt} = -\frac{1}{\omega}\left[f\frac{\partial f}{\partial x} + \frac{\omega^2-f^2}{c_n}\frac{\partial c_n}{\partial x} \right]
+\end{equation}
+and
+\begin{equation}
+	\label{eq:DlDt_itide}
+	\frac{Dl}{Dt} = -\frac{1}{\omega}\left[f\frac{\partial f}{\partial y} + \frac{\omega^2-f^2}{c_n}\frac{\partial c_n}{\partial y} \right].
+\end{equation}
+Next note that $tan\phi = l/k$ so that 
+\begin{equation}
+	\label{eq:DphiDt_itide}
+	\frac{D\phi}{Dt} = .
+\end{equation}
+Equations \ref{eq:eg}-\ref{eq:DphiDt_itide} then form a close set for tracing out the trajectories of modes of internal tides so long as the non-rotation group velocity for each mode can be determined (more on this later).
+
+These equations are invoked in the model through a transport equation for the energy density of a given mode:
+
+\end{document}
