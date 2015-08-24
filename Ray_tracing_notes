@@ -9,4 +9,17 @@
 
 This documents contains running documentation of the ray tracing parameterization in MOM6.
 
-\section{Background}
+\section{Framework for parameterizing low-mode internal tides}
+
+Of the 3.5TW of power in the baroclinic tide, roughly 2.5TW is directly converted to turbulence at continental marigins with the remaining 1TW being lost to internal (baroclinic) waves in the open ocean as tidal flows encounter topographic roughness \citep{Munk&Wunsch98;Wunsch&Ferrari04}. The power transferred to the internal wave field perhaps makes up roughly half of the total power hypothesized to support the open-ocean canonical diffusivity of $K=10^{-4}m^2/s$ \citep{Munk}. 
+
+The propagating internal waves occuring at various tidal frequencies are referred to as ``internal tides." Those waves with lowest vertical wave number (low modes) are less suceptible to dissipation by shear and are known to propagate thousands of kilometers prior to remotely breaking and giving up their energy to 3-D turbulence and mixing. The precise partitioning of local to remote dissipation is not straight forward and can vary from ?? to ??, where q is the fraction of local to remote dissipation (need citation). Because low modes have the potential to transmit large amounts of energy over large distances, consideration of their behavior and influence on mixing in global climate models is important. Since the resolution of GCMs precludes explicit representation of these internal waves, their generation, propagation, and dissipation must all be parameterized. Herein lies the focus of this work.
+
+\subsection{Propagation}
+
+A framework for predicting the trajectory of the low-mode internal tides lies in the well refereced theory of ray-tracing \cite{Lighthill76}, wherein an inhomogeneous dispersion relation 
+\begin{equation}
+\label{eq:dispersion}
+\omega = \Omeqa{\textbf{k},\textbf{x}}
+\end{equation}
+is used to predict trajectory of the group velocity vector, $\textbf{c}_g=\partial\omega/\partial\textbf{k}$.
