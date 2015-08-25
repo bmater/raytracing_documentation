@@ -24,30 +24,30 @@ The propagating internal waves occuring at various tidal frequencies are referre
 
 A framework for predicting the trajectory of the low-mode internal tides lies in the well referenced theory of ray-tracing \cite{Lighthill76}, wherein an inhomogeneous dispersion relation 
 \begin{equation}
-\label{eq:dispersion}
-\omega = \Omega({\textbf{k},\textbf{x}})
+	\label{eq:dispersion}
+	\omega = \Omega({\textbf{k},\textbf{x}})
 \end{equation}
 is used to predict trajectory of the group velocity vector, $\textbf{c}_g\equiv\partial\omega/\partial\textbf{k}$. The basic idea is to derive an equation for the time derivative of the wave number vector, \kv. First, defining the phase to be $\theta = \textbf{k}\cdot\textbf{x}-\omega t$, then $\nabla\theta = \textbf{k}$ and $\partial\theta/\partial t = -\omega$. Therefore
-\begin{equation}
-\frac{\partial\textbf{k}}{\partial t} = -\nabla\omega = -\nabla\Omega({\textbf{k},\textbf{x}}.)
+	\begin{equation}
+	\frac{\partial\textbf{k}}{\partial t} = -\nabla\omega = -\nabla\Omega({\textbf{k},\textbf{x}}.)
 \end{equation}
 Since the frequency is a function of both wavenumber and space, this equation becomes
 \begin{equation}
-\frac{\partial\textbf{k}}{\partial t} = -\left(\frac{\partial\Omega}{\partial\textbf{k}}\nabla\textbf{k} + \nabla\Omega|_k  \right),
+	\frac{\partial\textbf{k}}{\partial t} = -\left(\frac{\partial\Omega}{\partial\textbf{k}}\nabla\textbf{k} + \nabla\Omega|_k  \right),
 \end{equation}
 or equivilently,
 \begin{equation}
-\frac{\partial\textbf{k}}{\partial t} + \textbf{c}_g\cdot\nabla\textbf{k} = -\nabla\Omega|_k,	
+	\frac{\partial\textbf{k}}{\partial t} + \textbf{c}_g\cdot\nabla\textbf{k} = -\nabla\Omega|_k,	
 \end{equation}
 where $\nabla\Omega|_k$ is the change in frequency at constant wave number (i.e. as the wave propagates through the inhomogeneous medium). Note that the left hand side is the material derivate for the wave number along the trajectory of the group velocity, i.e., 
 \begin{equation}
-\label{eq:DkDt}
-D\textbf{k}/Dt = -\nabla\Omega|_k
+	\label{eq:DkDt}
+	D\textbf{k}/Dt = -\nabla\Omega|_k
 \end{equation}
 From this, it is obvious that wavenumber is \textit{not} conserved in an inhomogeneous medium. Rather, it is frequency that is conserved along a ray. Conservation of frequency can be proved by expanding the full time derivative of the frequency using the chain rule, 
 \begin{equation}
-\label{eq:DomegaDt}
-\frac{d\omega}{dt} = \frac{\partial\omega}{\partial k_i}\frac{dk_i}{dt} + \frac{\partial\omega}{\partial x_i}\frac{dx_i}{dt},
+	\label{eq:DomegaDt}
+	\frac{d\omega}{dt} = \frac{\partial\omega}{\partial k_i}\frac{dk_i}{dt} + \frac{\partial\omega}{\partial x_i}\frac{dx_i}{dt},
 \end{equation}
 then plugging in equation \ref{eq:DkDt} (for $dk_i/dt$) and the specification of $\textbf{c}_g \equiv \partial\omega/\partial k_i = dx_i/dt$ to yield $d\omega/dt = 0$. To trace a ray in three dimensions, one would solve the three equations given by \ref{eq:DkDt} and the three additional equations given by $\textbf{c}_g = \partial\Omega/\partial\textbf{k}$.
 
@@ -55,7 +55,7 @@ then plugging in equation \ref{eq:DkDt} (for $dk_i/dt$) and the specification of
 
 Since we are interested in very long waves propagating along a horizontal wave guide (i.e. the finite depth of the ocean), the problem of ray tracing for the internal tide becomes two dimensional. The full dispersion relation for constant buoyancy frequency,
 \begin{equation}
-\omega^2 = f^2\left(\frac{m^2}{k^2+l^2+m^2}\right) + N^2\left(\frac{k^2+l^2}{k^2+l^2+m^2}\right),
+	\omega^2 = f^2\left(\frac{m^2}{k^2+l^2+m^2}\right) + N^2\left(\frac{k^2+l^2}{k^2+l^2+m^2}\right),
 \end{equation}
 can be modified in the hydrostatic, rotation-dependent limit (i.e. $K_h^2<<m^2$ and $\omega>\approx f$) to become
 \begin{equation}
@@ -87,10 +87,32 @@ and
 Next note that $tan\phi = l/k$ so that 
 \begin{equation}
 	\label{eq:DphiDt_itide}
-	\frac{D\phi}{Dt} = .
+	\frac{D\phi}{Dt} = \frac{D}{Dt}\left(tan^{-1}(l/k)\right) = \frac{1}{K_h^2}\left[k\frac{Dl}{Dt} - l\frac{Dk}{Dt}\right].
 \end{equation}
-Equations \ref{eq:eg}-\ref{eq:DphiDt_itide} then form a close set for tracing out the trajectories of modes of internal tides so long as the non-rotation group velocity for each mode can be determined (more on this later).
+Equations \ref{eq:cg}-\ref{eq:DphiDt_itide} then form a close set for tracing out the trajectories of modes of internal tides so long as the non-rotational group velocity for each mode can be determined (more on this later).
 
-These equations are invoked in the model through a transport equation for the energy density of a given mode:
+These equations are invoked in the model through a transport equation for the energy density of a given mode. Neglecting advection by mean flow, this equation is
+\begin{equation}
+	\label{eq:En}
+	\frac{\partial E}{\partial t} + \nabla (\textbf{c}_gE) + \frac{\partial}{\partial\phi}\left(\frac{D\phi}{Dt}E\right) = Sources - Sinks.
+\end{equation}
+This equation can be evaluated for each mode of each frequency in the two horizontal dimensions and an additional dimension for angular orientation. As such, the energy density array in the model is 5-dimensional. This assumes that the mdoes are weakly dependent. 
+
+\section{Numerical solution}
+The steady-state form of equation \ref{eq:En} is solved in a MOM6 module using the following procedure:
+\begin{itemize}
+	\item First, the power being input into the internal tide from the barotropic tide is determined (currently using the small-scale roughness scheme of \cite{Jayne&StLaurent02}). This power it then integrated over a timestep and divded among the modes of interest for a given frequency. The angular orientation of this energy source remains a subject of study (currently isotropically distributed in angular space).
+	\item The magnitude of the non-rotational group velocity, $c_n$, is determined for the first baroclinic mode by solving an eigen value problem at every grid point for the frequency of interest using the local $N$ profile (more on this later). The values of $c_n$ for higher modes is approximated based on this estimate.
+	\item The magnitude of the horizontal wave number, $K_h$, is determined from the dispersion relation (equation \ref{eq:disp}) for the frequency and mode of interest.
+	\item The rate of refraction at each point (``velocity" in angular space) is determined from equation \ref{eq:DphiDt_itide} using \ref{eq:DkDt_itide} and \ref{eq:DlDt_itide} for the frequency and mode of interest.
+	\item Energy is advected in angular space using a piece-wise parabolic (or simple upwind) finite volume approach. This is done for half a time-step.
+	\item The magnitude of the group velocity is calculated from equation \ref{eq:cg}.
+	\item $c_{g,x}$ and $c_{g,y}$ are calculated at each point for each discrete angular orientation. These values are then used to advect the energy in the x-direction and then the y-direction. The advection scheme is piece-wise parabolic.
+	\item Refraction is again applied using the other half of the time step.
+	\item Finally, an energy sink is applied over the time step. A portion of that energy is being used to define a turbulent diffusivity that varies in the vertical according to the profiles of either \cite{SimmonsEtAl04} or \cite{Polzin09}. The near-bottom velocity of each mode is needed in these calculations and will be determined by solving an eigen value problem at each grid point using the assumption that the stratification changes little over a vertical wavelength (WKB assumption).
+\end{itemize}
+
+
+
 
 \end{document}
